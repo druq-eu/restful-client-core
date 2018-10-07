@@ -65,11 +65,35 @@ class DataObject extends Object {
 		return $restfulClient->getByIds($class, $ids);
 	}
 
+    /**
+     * @param Filter $filter
+     * @param RestfulClient $restfulClient
+     * @return DataObjectList
+     */
+    public static function getAll($restfulClient = null)
+    {
+        $restfulClient = $restfulClient ?: RestfulClient::getLastClient();
+        $class = get_called_class();
+        return $restfulClient->getAll($class);
+	}
+
+    /**
+     * @param Filter $filter
+     * @param RestfulClient $restfulClient
+     * @return DataObjectList
+     */
+    public static function getByFilter(Filter $filter, $restfulClient = null)
+    {
+        $restfulClient = $restfulClient ?: RestfulClient::getLastClient();
+        $class = get_called_class();
+        return $restfulClient->getByFilter($class, $filter);
+	}
+
 	/**
 	 * @param array $array
 	 * @return static
 	 */
-	public static function create($array) {
+	public static function create($array = []) {
 		return new static($array);
 	}
 

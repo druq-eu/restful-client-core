@@ -15,7 +15,7 @@ abstract class Object {
      * @param array $array
      * @return static
      */
-    public static function create($array = null) {
+    public static function create($array = []) {
         $class = get_called_class();
         $obj = new $class();
         if (is_array($array)) {

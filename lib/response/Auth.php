@@ -23,11 +23,19 @@ class Auth extends Object {
     public $token;
 
     public function isTokenExpired() {
-        return $this->code == self::AUTH_CODE_TOKEN_EXPIRED;
+        return $this->code === self::AUTH_CODE_TOKEN_EXPIRED;
     }
 
     public function isTokenInvalid() {
-        return $this->code == self::AUTH_CODE_TOKEN_INVALID;
+        return $this->code === self::AUTH_CODE_TOKEN_INVALID;
+    }
+
+    public function isLoggedIn() {
+        return $this->code === self::AUTH_CODE_LOGGED_IN;
+    }
+
+    public function isLoginFail() {
+        return $this->code === self::AUTH_CODE_LOGIN_FAIL;
     }
 
 }

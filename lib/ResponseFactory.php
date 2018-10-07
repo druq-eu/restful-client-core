@@ -16,8 +16,13 @@ class ResponseFactory {
         return null;
     }
 
-    public static function createDataObjectList($class, $json) {
-        $dol = DataObjectList::create($json);
+    /**
+     * @param string $class
+     * @param array|\stdClass $json
+     * @return static
+     */
+    public static function createDataObjectList($class, $collectionJson) {
+        $dol = DataObjectList::create((array) $collectionJson);
         $dol->setModel($class);
         $items = [];
         foreach ($dol->getItems() as $item) {

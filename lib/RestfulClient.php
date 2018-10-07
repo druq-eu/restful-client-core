@@ -170,6 +170,19 @@ abstract class RestfulClient {
      */
     abstract public function getByIds($class, $ids);
 
+    /**
+     * @param string $class
+     * @return DataObjectList
+     */
+    abstract public function getAll($class);
+
+    /**
+     * @param string $class
+     * @param Filter $filter
+     * @return DataObjectList
+     */
+    abstract public function getByFilter($class, Filter $filter);
+
     protected static function sanitizeClassName($class) {
         $ex = explode('\\', $class);
         return end($ex);
@@ -207,7 +220,6 @@ abstract class RestfulClient {
         $params['token'] = $this->token;
         $uri = $url.'?'.http_build_query($params);
         $json = json_decode($content = file_get_contents($uri));
-//        \Debug::dump($content);
         if ($json instanceof \stdClass) {
             if (isset($json->result)) return Auth::create($json);
             if (isset($json->error)) return Error::create($json);

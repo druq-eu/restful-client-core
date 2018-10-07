@@ -19,7 +19,7 @@ class DataObjectList extends Object {
 	/** @var int */
 	private $pageNo;
 
-	/** @var array */
+	/** @var DataObject[] */
 	private $items = [];
 
     /**
@@ -118,6 +118,20 @@ class DataObjectList extends Object {
      */
     public function setModel($model) {
         $this->model = $model;
+    }
+
+    /**
+     * @param string $keyField
+     * @param string $valueField
+     * @return array
+     */
+    public function map($keyField = 'ID', $valueField = 'Title')
+    {
+        $arr = [];
+        foreach ($this->items as $item) {
+            $arr[$item->{$keyField}] = $item->{$valueField};
+        }
+        return $arr;
     }
 
 }
