@@ -6,7 +6,8 @@ use druq\restful\client\core\response\Auth;
 use druq\restful\client\core\response\Error;
 use druq\restful\client\core\storage\RequestStorage;
 
-abstract class RestfulClient {
+abstract class RestfulClient
+{
 
     /** @var RestfulClient[] */
     private static $clients;
@@ -33,22 +34,27 @@ abstract class RestfulClient {
      * Be careful about password!
      * Request storage used if not provided any
      */
-    public static function registerClientStorage(ClientSerializable $storage) {
+    public static function registerClientStorage(ClientSerializable $storage)
+    {
         self::$storage = $storage;
     }
 
     /**
      * @return ClientSerializable
      */
-    private static function getStorage() {
+    private static function getStorage()
+    {
         return self::$storage ?: self::$storage = new RequestStorage();
     }
 
     /**
      * @param bool $forceLoad
      */
-    private static function loadClients($forceLoad = false) {
-        if (self::$clients && !$forceLoad) return;
+    private static function loadClients($forceLoad = false)
+    {
+        if (self::$clients && !$forceLoad) {
+            return;
+        }
         $clients = self::getStorage()->loadClients();
         self::$clients = array();
         if (is_array($clients)) {
@@ -64,14 +70,16 @@ abstract class RestfulClient {
     /**
      * @return bool
      */
-    private static function saveClients() {
+    private static function saveClients()
+    {
         return self::getStorage()->saveClients(self::$clients);
     }
 
     /**
      * @return string
      */
-    public function getKey() {
+    public function getKey()
+    {
         return self::getKeyHash($this->getBaseUrl(), $this->login);
     }
 
@@ -80,7 +88,8 @@ abstract class RestfulClient {
      * @param string $login
      * @return string
      */
-    private static function getKeyHash($baseUrl, $login) {
+    private static function getKeyHash($baseUrl, $login)
+    {
         return md5(md5($baseUrl) . md5($login));
     }
 
@@ -91,7 +100,8 @@ abstract class RestfulClient {
      * @param string $version
      * @return RestfulClient
      */
-    public static function registerClient($url, $login, $pass, $version = '1') {
+    public static function registerClient($url, $login, $pass, $version = '1')
+    {
         return self::getClient($url, $login, $pass, $version);
     }
 
@@ -102,12 +112,15 @@ abstract class RestfulClient {
      * @param string $version
      * @return RestfulClient
      */
-    public static function getClient($url, $login, $pass, $version = '1') {
-        if (!self::$clients) self::loadClients();
+    public static function getClient($url, $login, $pass, $version = '1')
+    {
+        if (!self::$clients) {
+            self::loadClients();
+        }
         $key = self::getKeyHash(static::constructBaseUrl($url, $version), $login);
         $write = false;
         if (!isset(self::$clients[$key])) {
-            $class = static ::getClientClass($version);
+            $class = static::getClientClass($version);
             /** @var RestfulClient $client */
             self::$clients[$key] = new $class();
             self::$clients[$key]->setUrl($url);
@@ -122,30 +135,35 @@ abstract class RestfulClient {
             $write = true;
         }
         if (self::$clients[$key]->isExpired()) {
-            $write = (bool) self::$clients[$key]->login();
+            $write = (bool)self::$clients[$key]->login();
         }
-        if ($write) self::saveClients();
+        if ($write) {
+            self::saveClients();
+        }
 
 //        \Debug::dump(self::$clients);
 
         return self::$clients[$key];
     }
 
-    public static function getClientClass($version) {
-        return __NAMESPACE__.'\\v'.$version.'\\Client';
+    public static function getClientClass($version)
+    {
+        return __NAMESPACE__ . '\\v' . $version . '\\Client';
     }
 
     /**
      * @return bool
      */
-    public function isExpired() {
+    public function isExpired()
+    {
         return $this->expire && time() > $this->expire;
     }
 
     /**
      * @return string
      */
-    public function getBaseUrl() {
+    public function getBaseUrl()
+    {
         return static::constructBaseUrl($this->url, $this->version);
     }
 
@@ -154,8 +172,9 @@ abstract class RestfulClient {
      * @param string $version
      * @return string
      */
-    public static function constructBaseUrl($url, $version) {
-        return $url.'/api-v'.$version.'/';
+    public static function constructBaseUrl($url, $version)
+    {
+        return $url . '/api-v' . $version . '/';
     }
 
     /**
@@ -172,6 +191,20 @@ abstract class RestfulClient {
 
     /**
      * @param string $class
+     * @param array $record
+     * @return DataObject
+     */
+    abstract public function createRecord($class, $record);
+
+    /**
+     * @param string $class
+     * @param array $records
+     * @return DataObjectList
+     */
+    abstract public function createRecords($class, $records);
+
+    /**
+     * @param string $class
      * @return DataObjectList
      */
     abstract public function getAll($class);
@@ -183,7 +216,8 @@ abstract class RestfulClient {
      */
     abstract public function getByFilter($class, Filter $filter);
 
-    protected static function sanitizeClassName($class) {
+    protected static function sanitizeClassName($class)
+    {
         $ex = explode('\\', $class);
         return end($ex);
     }
@@ -194,17 +228,25 @@ abstract class RestfulClient {
      * @return \stdClass|array
      * @throws \Exception
      */
-    protected function request($url, $params = array()){
-        $response = $this->getResponse($url, $params);
-        if ($response instanceof Error) throw new Exception($response->message, $response->code);
+    protected function request($url, $params = array(), $method = 'GET')
+    {
+        $response = $this->getResponse($url, $params, $method);
+        if ($response instanceof Error) {
+            throw new Exception($response->message, $response->code);
+        }
         if ($response instanceof Auth) {
             if ($response->isTokenExpired() || $response->isTokenInvalid()) {
-                if (!$this->login()) throw new Exception('Could not login to '.$url.' as '.$this->login);
+
+                if (!$this->login()) {
+                    throw new Exception('Could not login to ' . $url . ' as ' . $this->login);
+                }
                 self::saveClients();
                 $response = $this->getResponse($url, $params);
-                if ($response instanceof Error) throw new Exception($response->message, $response->code);
+                if ($response instanceof Error) {
+                    throw new Exception($response->message, $response->code);
+                }
                 if ($response instanceof Auth) {
-                    throw new Exception('Server refused with message: "'.$response->message.'"', $response->code);
+                    throw new Exception('Server refused with message: "' . $response->message . '"', $response->code);
                 }
             }
         }
@@ -216,13 +258,39 @@ abstract class RestfulClient {
      * @param array $params
      * @return Auth|Error|\stdClass|array
      */
-    protected function getResponse($url, $params = array()) {
-        $params['token'] = $this->token;
-        $uri = $url.'?'.http_build_query($params);
-        $json = json_decode($content = file_get_contents($uri));
+    protected function getResponse($url, $params = array(), $method = 'GET')
+    {
+
+        $uri = $url;
+        $body = '';
+
+        if ($method === 'GET') {
+            $params['token'] = $this->token;
+            $uri = $url . '?' . http_build_query($params);
+        }
+        if ($method === 'POST') {
+            $uri = $url . '?token=' . $this->token;
+            $body = json_encode($params);
+        }
+
+        $opts = array(
+            'http' => array(
+                'method' => $method,
+                'header' => "token: {$this->token}\r\n" .
+                    "Content-Type: application/json; charset=utf-8\r\n",
+                'content' => $body,
+            )
+        );
+        $context = stream_context_create($opts);
+
+        $json = json_decode($content = file_get_contents($uri, false, $context));
         if ($json instanceof \stdClass) {
-            if (isset($json->result)) return Auth::create($json);
-            if (isset($json->error)) return Error::create($json);
+            if (isset($json->result)) {
+                return Auth::create($json);
+            }
+            if (isset($json->error)) {
+                return Error::create($json);
+            }
         }
         return $json;
     }
@@ -230,91 +298,104 @@ abstract class RestfulClient {
     /**
      * @param string $url
      */
-    public function setUrl($url) {
+    public function setUrl($url)
+    {
         $this->url = $url;
     }
 
     /**
      * @param string $login
      */
-    public function setLogin($login) {
+    public function setLogin($login)
+    {
         $this->login = $login;
     }
 
     /**
      * @param string $pass
      */
-    public function setPass($pass) {
+    public function setPass($pass)
+    {
         $this->pass = $pass;
     }
 
     /**
      * @param string $expire
      */
-    public function setExpire($expire) {
+    public function setExpire($expire)
+    {
         $this->expire = $expire;
     }
 
     /**
      * @param string $token
      */
-    public function setToken($token) {
+    public function setToken($token)
+    {
         $this->token = $token;
     }
 
     /**
      * @param string $version
      */
-    public function setVersion($version) {
+    public function setVersion($version)
+    {
         $this->version = $version;
     }
 
     /**
      * @return string
      */
-    public function getUrl() {
+    public function getUrl()
+    {
         return $this->url;
     }
 
     /**
      * @return string
      */
-    public function getLogin() {
+    public function getLogin()
+    {
         return $this->login;
     }
 
     /**
      * @return string
      */
-    public function getPass() {
+    public function getPass()
+    {
         return $this->pass;
     }
 
     /**
      * @return string
      */
-    public function getExpire() {
+    public function getExpire()
+    {
         return $this->expire;
     }
 
     /**
      * @return string
      */
-    public function getToken() {
+    public function getToken()
+    {
         return $this->token;
     }
 
     /**
      * @return string
      */
-    public function getVersion() {
+    public function getVersion()
+    {
         return $this->version;
     }
 
     /**
      * @return RestfulClient
      */
-    public static function getLastClient() {
+    public static function getLastClient()
+    {
         return self::$last_client;
     }
 

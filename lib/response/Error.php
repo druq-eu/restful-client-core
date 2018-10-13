@@ -4,7 +4,12 @@ namespace druq\restful\client\core\response;
 
 use druq\restful\client\core\Object;
 
-class Error extends Object {
+/**
+ * Class Error
+ * @package druq\restful\client\core\response
+ */
+class Error extends Object
+{
 
     const ERROR_CODE_CLASS_NOT_FOUND = 101;
     const ERROR_CODE_WRONG_HTTPMETHOD = 102;

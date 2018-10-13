@@ -5,9 +5,10 @@ namespace druq\restful\client\core;
 /**
  * Interface ClientSerializable
  * @package druq\restful\client\core
- * Interface to implement to store restful client objects 
+ * Interface to implement to store restful client objects
  */
-interface ClientSerializable {
+interface ClientSerializable
+{
 
     /**
      * @param RestfulClient[] $restfulClients

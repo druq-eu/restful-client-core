@@ -2,7 +2,8 @@
 
 namespace druq\restful\client\core;
 
-class Filter {
+class Filter
+{
 
     /** @var array */
     private $params;
@@ -29,7 +30,7 @@ class Filter {
     /**
      * @return array
      */
-    public function getParams(): array
+    public function getParams()
     {
         return $this->params;
     }

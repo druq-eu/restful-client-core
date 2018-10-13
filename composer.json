@@ -19,7 +19,7 @@
     "email": "support@druq.eu"
   },
   "require": {
-    "php": ">=5.3.0"
+    "php": ">=5.6.23"
   },
   "autoload": {
     "psr-4": {

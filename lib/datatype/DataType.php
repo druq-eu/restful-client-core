@@ -2,7 +2,11 @@
 
 namespace druq\restful\client\core\datatype;
 
-
-abstract class DataType {
+/**
+ * Class DataType
+ * @package druq\restful\client\core\datatype
+ */
+abstract class DataType
+{
 
 }

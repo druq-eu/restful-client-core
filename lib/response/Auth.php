@@ -4,7 +4,12 @@ namespace druq\restful\client\core\response;
 
 use druq\restful\client\core\Object;
 
-class Auth extends Object {
+/**
+ * Class Auth
+ * @package druq\restful\client\core\response
+ */
+class Auth extends Object
+{
 
     const AUTH_CODE_LOGGED_IN = 0;
     const AUTH_CODE_LOGIN_FAIL = 1;
@@ -22,19 +27,35 @@ class Auth extends Object {
     /** @var string */
     public $token;
 
-    public function isTokenExpired() {
+    /**
+     * @return bool
+     */
+    public function isTokenExpired()
+    {
         return $this->code === self::AUTH_CODE_TOKEN_EXPIRED;
     }
 
-    public function isTokenInvalid() {
+    /**
+     * @return bool
+     */
+    public function isTokenInvalid()
+    {
         return $this->code === self::AUTH_CODE_TOKEN_INVALID;
     }
 
-    public function isLoggedIn() {
+    /**
+     * @return bool
+     */
+    public function isLoggedIn()
+    {
         return $this->code === self::AUTH_CODE_LOGGED_IN;
     }
 
-    public function isLoginFail() {
+    /**
+     * @return bool
+     */
+    public function isLoginFail()
+    {
         return $this->code === self::AUTH_CODE_LOGIN_FAIL;
     }
 

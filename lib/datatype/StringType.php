@@ -2,7 +2,11 @@
 
 namespace druq\restful\client\core\datatype;
 
-
-class StringType extends DataType {
+/**
+ * Class StringType
+ * @package druq\restful\client\core\datatype
+ */
+class StringType extends DataType
+{
 
 }
