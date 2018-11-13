@@ -10,6 +10,8 @@ use druq\restful\client\core\RestfulClient;
 class Client extends RestfulClient
 {
 
+    public $locale;
+
     /**
      * @return bool
      */
@@ -24,6 +26,21 @@ class Client extends RestfulClient
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param string $url
+     * @param array $params
+     * @param string $method
+     * @return array|\stdClass
+     * @throws \Exception
+     */
+    protected function request($url, $params = array(), $method = 'GET')
+    {
+        if ($this->locale && !isset($params['_locale'])) {
+            $params['_locale'] = $this->locale;
+        }
+        return parent::request($url, $params, $method);
     }
 
     /**
