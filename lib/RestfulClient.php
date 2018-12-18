@@ -286,10 +286,10 @@ abstract class RestfulClient
         $json = json_decode($content = file_get_contents($uri, false, $context));
         if ($json instanceof \stdClass) {
             if (isset($json->result)) {
-                return Auth::create($json);
+                return Auth::create((array)$json);
             }
             if (isset($json->error)) {
-                return Error::create($json);
+                return Error::create((array)$json);
             }
         }
         return $json;
