@@ -106,6 +106,9 @@ class Client extends RestfulClient
     {
         $url = $this->getBaseUrl() . self::sanitizeClassName($class);
         $responseArray = $this->request($url, $records, 'POST');
+        if (isset($responseArray->totalCount, $responseArray->items, $responseArray->itemsCount)) {
+            return ResponseFactory::createDataObjectList($class, $responseArray);
+        }
         $count = \count($responseArray);
         return ResponseFactory::createDataObjectList($class, [
             'totalCount' => $count,
